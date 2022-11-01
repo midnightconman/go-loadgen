@@ -3,6 +3,11 @@ package loadgen
 import (
 	"bufio"
 	"fmt"
+	"io"
+	"os"
+	"strings"
+	"time"
+
 	"github.com/intuit/go-loadgen/eventbreaker"
 	metricsUtility "github.com/intuit/go-loadgen/metrics"
 	utility "github.com/intuit/go-loadgen/util"
@@ -10,19 +15,22 @@ import (
 	"github.com/rcrowley/go-metrics"
 	"github.com/sirupsen/logrus"
 	"go.uber.org/ratelimit"
-	"io"
-	"os"
-	"strings"
-	"time"
 )
 
 func wrapUpTask(props *LoadGenProperties, totalLineCount int64) {
 	var log = logrus.New()
-	resultsLog, err := os.OpenFile(props.ResultLog, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0666)
-	if err != nil {
-		fmt.Print(err)
-		os.Exit(1)
+	var resultsLog = os.Stdout
+
+	// Don't try to open os.stdout
+	if strings.ToLower(props.FilePath) != "stdout" {
+		var err error
+		resultsLog, err = os.OpenFile(props.ResultLog, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0666)
+		if err != nil {
+			fmt.Print(err)
+			os.Exit(1)
+		}
 	}
+
 	log.Out = resultsLog
 	log.Info(props.Tags+" total_lines_generated=", totalLineCount)
 	fmt.Printf("total_lines_generated=%v\n", totalLineCount)
@@ -189,8 +197,6 @@ func GenerateAlphaNumeric(promRegistry *prometheus.Registry, props *LoadGenPrope
 	var totalLineCount float64
 	var singleLineCount float64
 	var multiLineCount float64
-	singleLineResult := props.buildLine()
-	multiLineResult := props.buildMultiLine()
 	numberOfFiles := int(props.FileCount)
 	fileCountIndex := 0
 	prev := time.Now()
@@ -249,10 +255,12 @@ func GenerateAlphaNumeric(promRegistry *prometheus.Registry, props *LoadGenPrope
 		}
 
 		if int(multiLineCount/totalLineCount*100) <= props.MultiLinePercent && props.MultiLinePercent != 0 {
-			log.Info(multiLineResult)
+			// Generate a new log line each time
+			log.Info(props.buildMultiLine())
 			multiLineCount++
 		} else {
-			log.Info(singleLineResult)
+			// Generate a new log line each time
+			log.Info(props.buildLine())
 			singleLineCount++
 		}
 		if fileCountIndex == numberOfFiles-1 {
