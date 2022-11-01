@@ -219,15 +219,6 @@ func GenerateAlphaNumeric(promRegistry *prometheus.Registry, props *LoadGenPrope
 		promRegistry.MustRegister(promTotalBytesProcessedCounter)
 	}
 
-	metrics.NewRegisteredFunctionalGauge("bytes-per-second", goGenMetricsRegistry, func() int64 {
-		value := props.LineLength * props.Lps
-		//export to prom
-		if props.EnableMetrics {
-			promTotalBytesProcessedCounter.Add(float64(value))
-		}
-		return value
-	})
-
 	for {
 		now := rateLimit.Take()
 		select {
@@ -256,11 +247,15 @@ func GenerateAlphaNumeric(promRegistry *prometheus.Registry, props *LoadGenPrope
 
 		if int(multiLineCount/totalLineCount*100) <= props.MultiLinePercent && props.MultiLinePercent != 0 {
 			// Generate a new log line each time
-			log.Info(props.buildMultiLine())
+			msg := props.buildMultiLine()
+			log.Info(msg)
+			promTotalBytesProcessedCounter.Add(float64(len(msg)))
 			multiLineCount++
 		} else {
 			// Generate a new log line each time
-			log.Info(props.buildLine())
+			msg := props.buildLine()
+			log.Info(msg)
+			promTotalBytesProcessedCounter.Add(float64(len(msg)))
 			singleLineCount++
 		}
 		if fileCountIndex == numberOfFiles-1 {

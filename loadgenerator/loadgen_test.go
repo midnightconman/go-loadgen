@@ -9,9 +9,9 @@ import (
 func TestBuildLineMethod(t *testing.T) {
 	var limit int = 10
 	loadGen := new(LoadGenProperties)
-	loadGen.LineLength = int64(limit)
-	if len(loadGen.buildLine()) != limit {
-		t.Error("buildLine() has generated a string which is not equal to the specified lineLength")
+	loadGen.LineMaxLength = int64(limit)
+	if len(loadGen.buildLine()) > limit {
+		t.Error("buildLine() generated a string which is longer than the specified lineMaxLength")
 	}
 }
 
@@ -24,10 +24,10 @@ func tearDownTestFiles(fileArray []*os.File) {
 func TestMultiLineBuilder(t *testing.T) {
 	loadGen := new(LoadGenProperties)
 	var limit int = 10
-	loadGen.LineLength = int64(limit)
+	loadGen.LineMaxLength = int64(limit)
 	loadGen.NumOfLinesInMultiLineLog = 10
 	expectedNumberOfLines := loadGen.NumOfLinesInMultiLineLog
-	expectedNumberOfBytes := (int(loadGen.LineLength) * loadGen.NumOfLinesInMultiLineLog) + (loadGen.NumOfLinesInMultiLineLog - 1)
+	expectedNumberOfBytes := (int(loadGen.LineMaxLength) * loadGen.NumOfLinesInMultiLineLog) + (loadGen.NumOfLinesInMultiLineLog - 1)
 
 	outputLine := loadGen.buildMultiLine()
 	if len(outputLine) != expectedNumberOfBytes {

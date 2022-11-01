@@ -3,11 +3,6 @@ package loadgen
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/sirupsen/logrus"
-	easy "github.com/t-tomalak/logrus-easy-formatter"
-	"github.com/intuit/go-loadgen/constants"
-	utility "github.com/intuit/go-loadgen/util"
-	"gopkg.in/natefinch/lumberjack.v2"
 	"io/ioutil"
 	"math/rand"
 	"os"
@@ -15,12 +10,19 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/intuit/go-loadgen/constants"
+	utility "github.com/intuit/go-loadgen/util"
+	"github.com/sirupsen/logrus"
+	easy "github.com/t-tomalak/logrus-easy-formatter"
+	"gopkg.in/natefinch/lumberjack.v2"
 )
 
 type LoadGenProperties struct {
 	Duration                 int64           `json:"duration"`
 	FileCount                int64           `json:"file-count"`
-	LineLength               int64           `json:"line-length"`
+	LineMaxLength            int64           `json:"line-max-length"`
+	LineMinLength            int64           `json:"line-min-length"`
 	MultiLinePercent         int             `json:"multiline-percentage"`
 	NumOfLinesInMultiLineLog int             `json:"line-count"`
 	FilePath                 string          `json:"file-path"`
@@ -83,9 +85,9 @@ func (props *LoadGenProperties) fileRef() ([]*os.File, error) {
 
 	// if output path is declared as stdout then return reference to stdout and skip rest
 	if props.FilePath != "" {
-		if strings.ToLower(props.FilePath) == "stdout"{
+		if strings.ToLower(props.FilePath) == "stdout" {
 			fileArray[0] = os.Stdout
-			return fileArray ,nil
+			return fileArray, nil
 		}
 	}
 	var err error = nil
@@ -108,9 +110,8 @@ func (props *LoadGenProperties) fileRef() ([]*os.File, error) {
 }
 
 func (props *LoadGenProperties) buildLine() string {
-	var seededRand = rand.New(
-		rand.NewSource(time.Now().UnixNano()))
-	randString := make([]byte, props.LineLength)
+	var seededRand = rand.New(rand.NewSource(time.Now().UnixNano()))
+	randString := make([]byte, seededRand.Int63n(props.LineMaxLength-props.LineMinLength)+props.LineMinLength)
 	for i, _ := range randString {
 		randNumber := seededRand.Intn(int(len(chars) - 1))
 		randString[i] = chars[randNumber]
@@ -122,7 +123,7 @@ func (props *LoadGenProperties) buildLine() string {
 func (props *LoadGenProperties) setupLogRotation(filePath string, logHandlers []*logrus.Logger) {
 
 	for i := 0; i < len(logHandlers); i++ {
-		var maxFileSize int = 0;
+		var maxFileSize int = 0
 		if props.RotateSizeMB == 0 {
 			maxFileSize = constants.DefaultMaxFileRotationSize
 		} else {
@@ -149,7 +150,7 @@ func (props *LoadGenProperties) setupLogRotation(filePath string, logHandlers []
 }
 
 func (props *LoadGenProperties) buildMultiLine() string {
-	lineLength := int(props.LineLength)
+	lineLength := int(props.LineMaxLength)
 	numberOfLines := int(props.NumOfLinesInMultiLineLog)
 	maxCapacityRequired := (numberOfLines * (lineLength)) + (numberOfLines - 1)
 	multiLineString := make([]byte, maxCapacityRequired, maxCapacityRequired)

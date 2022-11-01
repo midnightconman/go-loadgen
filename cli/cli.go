@@ -3,19 +3,21 @@ package cli
 import (
 	"errors"
 	"fmt"
+	"os"
+	"sync"
+
 	"github.com/intuit/go-loadgen/constants"
 	loadgen "github.com/intuit/go-loadgen/loadgenerator"
 	"github.com/intuit/go-loadgen/metrics"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/spf13/cobra"
 	easy "github.com/t-tomalak/logrus-easy-formatter"
-	"os"
-	"sync"
 )
 
 const (
 	lineCount                   = "line-count"
-	lineLength                  = "line-length"
+	lineMaxLength               = "line-max-length"
+	lineMinLength               = "line-min-length"
 	fileCount                   = "file-count"
 	duration                    = "duration"
 	enableRotate                = "enable-log-rotation"
@@ -49,7 +51,8 @@ var cfgFile string
 func printInput(props *loadgen.LoadGenProperties) {
 	fmt.Printf("Input values = ")
 	fmt.Printf(lineCount+" = %d\n", props.NumOfLinesInMultiLineLog)
-	fmt.Printf(lineLength+" = %d\n", props.LineLength)
+	fmt.Printf(lineMaxLength+" = %d\n", props.LineMaxLength)
+	fmt.Printf(lineMinLength+" = %d\n", props.LineMinLength)
 	fmt.Printf(duration+" = %d\n", props.Duration)
 	fmt.Printf(linesPerSecond+" = %d\n", props.Lps)
 	fmt.Println(output + " =  %s" + props.FilePath)
@@ -169,9 +172,11 @@ func Run(props *loadgen.LoadGenProperties) {
 	//Defining local flags for random string generator command
 	randomStringsCmd.Flags().IntVarP(&props.MultiLinePercent, multiLinePercent, "m", constants.DefaultMultiLinePercentage, " % of log entries which have multiple lines, example: 1% will generate ")
 	randomStringsCmd.Flags().IntVarP(&props.NumOfLinesInMultiLineLog, lineCount, "n", constants.DefaultMultiLineCount, "max number of lines in multiline log entry")
-	randomStringsCmd.Flags().Int64VarP(&props.LineLength, lineLength, "l", constants.DefaultLineLength, "line length(number of characters)")
+	randomStringsCmd.Flags().Int64VarP(&props.LineMaxLength, lineMaxLength, "", constants.DefaultLineMaxLength, "line max length(number of characters)")
+	randomStringsCmd.Flags().Int64VarP(&props.LineMinLength, lineMinLength, "", constants.DefaultLineMinLength, "line min length(number of characters)")
 	randomStringsCmd.MarkFlagRequired(lineCount)
-	randomStringsCmd.MarkFlagRequired(lineLength)
+	randomStringsCmd.MarkFlagRequired(lineMaxLength)
+	randomStringsCmd.MarkFlagRequired(lineMinLength)
 	randomStringsCmd.MarkFlagRequired(multiLinePercent)
 
 	rootCmd.AddCommand(randomStringsCmd, replayFileCmd)

@@ -12,8 +12,11 @@ const DefaultFileCount = 1
 // DefaultMetricsServerPortal is the default port on which the prometheus metrics server starts
 const DefaultMetricsServerPort = "8080"
 
-//DefaultLineLength is the default line length
-const DefaultLineLength = 1000 //1 KiloBytes
+//DefaultLineMaxLength is the default max line length
+const DefaultLineMaxLength = 1000 //1 KiloBytes
+
+//DefaultLineMinLength is the default min line length
+const DefaultLineMinLength = 10 //10 Bytes
 
 //DefaultMaxFileSize is the maximum size in MBytes after which the file will be rotated.
 const DefaultMaxFileSize = 100
