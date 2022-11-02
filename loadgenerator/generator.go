@@ -249,13 +249,17 @@ func GenerateAlphaNumeric(promRegistry *prometheus.Registry, props *LoadGenPrope
 			// Generate a new log line each time
 			msg := props.buildMultiLine()
 			log.Info(msg)
-			promTotalBytesProcessedCounter.Add(float64(len(msg)))
+			if props.EnableMetrics {
+				promTotalBytesProcessedCounter.Add(float64(len(msg)))
+			}
 			multiLineCount++
 		} else {
 			// Generate a new log line each time
 			msg := props.buildLine()
 			log.Info(msg)
-			promTotalBytesProcessedCounter.Add(float64(len(msg)))
+			if props.EnableMetrics {
+				promTotalBytesProcessedCounter.Add(float64(len(msg)))
+			}
 			singleLineCount++
 		}
 		if fileCountIndex == numberOfFiles-1 {

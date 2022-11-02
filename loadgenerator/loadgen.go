@@ -38,7 +38,7 @@ type LoadGenProperties struct {
 	ResultLog                string          `json:"results-log"`
 }
 
-const chars = "abcdefghijklmnopqrstuvwxyz" + "ABCDEFGHIJKLMNOPQRSTUVWXYZ" + "1234567890"
+const chars = "abcdefghijklmnopqrstuvwxyz " + "ABCDEFGHIJKLMNOPQRSTUVWXYZ" + "1234567890"
 
 func (props *LoadGenProperties) readFromConfig(configFile *string) {
 	config, err := os.Open(*configFile)

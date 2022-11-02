@@ -161,7 +161,6 @@ func Run(props *loadgen.LoadGenProperties) {
 	rootCmd.PersistentFlags().StringVar(&props.ResultLog, resultLog, "", "Path of the results log where metrics such as total_lines_generated will be log.")
 
 	rootCmd.MarkPersistentFlagRequired(output)
-	rootCmd.MarkPersistentFlagRequired(linesPerSecond)
 
 	//Defining local flags for replay file command
 	replayFileCmd.Flags().StringVarP(&props.InputSourceFile, inputFilePath, "i", "default.log", "file path of output log file ex: /var/tmp/test.log")
@@ -174,10 +173,6 @@ func Run(props *loadgen.LoadGenProperties) {
 	randomStringsCmd.Flags().IntVarP(&props.NumOfLinesInMultiLineLog, lineCount, "n", constants.DefaultMultiLineCount, "max number of lines in multiline log entry")
 	randomStringsCmd.Flags().Int64VarP(&props.LineMaxLength, lineMaxLength, "", constants.DefaultLineMaxLength, "line max length(number of characters)")
 	randomStringsCmd.Flags().Int64VarP(&props.LineMinLength, lineMinLength, "", constants.DefaultLineMinLength, "line min length(number of characters)")
-	randomStringsCmd.MarkFlagRequired(lineCount)
-	randomStringsCmd.MarkFlagRequired(lineMaxLength)
-	randomStringsCmd.MarkFlagRequired(lineMinLength)
-	randomStringsCmd.MarkFlagRequired(multiLinePercent)
 
 	rootCmd.AddCommand(randomStringsCmd, replayFileCmd)
 
