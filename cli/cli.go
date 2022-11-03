@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"sync"
+	"time"
 
 	"github.com/intuit/go-loadgen/constants"
 	loadgen "github.com/intuit/go-loadgen/loadgenerator"
@@ -20,6 +21,7 @@ const (
 	lineMinLength               = "line-min-length"
 	fileCount                   = "file-count"
 	duration                    = "duration"
+	shutdownSeconds             = "shutdown-seconds"
 	enableRotate                = "enable-log-rotation"
 	linesPerSecond              = "lines-per-second"
 	multiLinePercent            = "multi-line-percent"
@@ -51,6 +53,7 @@ func printInput(props *loadgen.LoadGenProperties) {
 	fmt.Printf(lineMaxLength+" = %d\n", props.LineMaxLength)
 	fmt.Printf(lineMinLength+" = %d\n", props.LineMinLength)
 	fmt.Printf(duration+" = %d\n", props.Duration)
+	fmt.Printf(shutdownSeconds+" = %d\n", props.ShutdownSeconds)
 	fmt.Printf(linesPerSecond+" = %d\n", props.Lps)
 	fmt.Println(output + " =  %s" + props.FilePath)
 	fmt.Printf(multiLinePercent+" = %d\n", props.MultiLinePercent)
@@ -140,11 +143,13 @@ func Run(props *loadgen.LoadGenProperties) {
 			setupFormatterWithTags(props, cmd)
 			go loadgen.GenerateAlphaNumeric(promRegistry, props)
 			wg.Wait()
+			time.Sleep(time.Second * (time.Duration(props.ShutdownSeconds)))
 		},
 	}
 
 	//Defining persistent flags for root command
 	rootCmd.PersistentFlags().Int64VarP(&props.Duration, duration, "d", constants.DefaultDurationInSeconds, "Duration of the job in seconds")
+	rootCmd.PersistentFlags().Int64VarP(&props.ShutdownSeconds, shutdownSeconds, "", constants.DefaultShutdownSeconds, "Pause after load generation for this many seconds")
 	rootCmd.PersistentFlags().Int64VarP(&props.Lps, linesPerSecond, "s", constants.DefaultLinesPerSecond, "target lines/second")
 	rootCmd.PersistentFlags().Int64VarP(&props.FileCount, fileCount, "", constants.DefaultFileCount, "target requests/sec. Note: log rotation does not work in multi file scenario.")
 	rootCmd.PersistentFlags().StringVarP(&cfgFile, config, "", "cfg", "-config /path/to/source/jsonfile")

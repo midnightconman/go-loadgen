@@ -219,13 +219,6 @@ func GenerateAlphaNumeric(promRegistry *prometheus.Registry, props *LoadGenPrope
 			wrapUpTask(props, int64(totalLineCount))
 			return
 		default:
-			{
-				counter.Inc(1)
-				if props.EnableMetrics {
-					promCounter.Add(1)
-				}
-
-			}
 		}
 		if !props.Rotate {
 			log.Out = fileArray[fileCountIndex]
@@ -244,6 +237,7 @@ func GenerateAlphaNumeric(promRegistry *prometheus.Registry, props *LoadGenPrope
 			log.Info(msg)
 			if props.EnableMetrics {
 				promTotalBytesProcessedCounter.Add(float64(len(msg)))
+				promCounter.Add(1)
 			}
 			multiLineCount++
 		} else {
@@ -252,6 +246,7 @@ func GenerateAlphaNumeric(promRegistry *prometheus.Registry, props *LoadGenPrope
 			log.Info(msg)
 			if props.EnableMetrics {
 				promTotalBytesProcessedCounter.Add(float64(len(msg)))
+				promCounter.Add(1)
 			}
 			singleLineCount++
 		}

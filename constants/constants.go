@@ -24,6 +24,9 @@ const DefaultMaxFileSize = 100
 //DefaultDurationInSeconds the default time the test would run if no duration is specified.
 const DefaultDurationInSeconds = 300 //5mins
 
+//DefaultShutdownSeconds the default time the test would run if no duration is specified.
+const DefaultShutdownSeconds = 1 //1 second
+
 //DefaultReplayCount is the default replay count if the duration is not specified and the replay count is not specified.
 const DefaultReplayCount = 0 //5mins
 

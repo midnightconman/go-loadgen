@@ -20,6 +20,7 @@ import (
 
 type LoadGenProperties struct {
 	Duration                 int64           `json:"duration"`
+	ShutdownSeconds          int64           `json:"shutdownSeconds"`
 	FileCount                int64           `json:"file-count"`
 	LineMaxLength            int64           `json:"line-max-length"`
 	LineMinLength            int64           `json:"line-min-length"`
