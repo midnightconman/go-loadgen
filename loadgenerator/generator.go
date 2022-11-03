@@ -77,10 +77,6 @@ func GenerateLoadFromInputFile(promRegistry *prometheus.Registry, props *LoadGen
 	counter := metrics.NewCounter()
 	goGenMetricsRegistry := metrics.NewRegistry()
 	goGenMetricsRegistry.Register("total-events-processed", counter)
-	metricsLogger := logrus.New()
-	metricsLogger.Out = os.Stdout
-	metricsLogger.Formatter = utility.GetFormatter(false)
-	go metrics.Log(goGenMetricsRegistry, 1*time.Second, metricsLogger)
 
 	//prometheus stuff
 	var promCounter, promTotalBytesProcessedCounter prometheus.Counter
@@ -206,10 +202,6 @@ func GenerateAlphaNumeric(promRegistry *prometheus.Registry, props *LoadGenPrope
 	counter := metrics.NewCounter()
 	goGenMetricsRegistry := metrics.NewRegistry()
 	goGenMetricsRegistry.Register("total_events_processed", counter)
-	metricsLogger := logrus.New()
-	metricsLogger.Out = os.Stdout
-	metricsLogger.Formatter = utility.GetFormatter(true)
-	go metrics.Log(goGenMetricsRegistry, 1*time.Second, metricsLogger)
 
 	//prometheus stuff
 	var promCounter, promTotalBytesProcessedCounter prometheus.Counter
