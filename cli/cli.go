@@ -37,9 +37,6 @@ const (
 
 func InputValidation(props *loadgen.LoadGenProperties) {
 
-	if !props.Rotate {
-		fmt.Println("Warning. File rotation is disabled. You may run out of disk space if the file grows too large!")
-	}
 	if props.FileCount > constants.MaxFileCount {
 		fmt.Printf("Too many files in --file-count parameter. This program can only support upto %d files\n", constants.MaxFileCount)
 		os.Exit(1)
