@@ -32,8 +32,11 @@ func wrapUpTask(props *LoadGenProperties, totalLineCount int64) {
 	}
 
 	log.Out = resultsLog
-	log.Info(props.Tags+" total_lines_generated=", totalLineCount)
-	fmt.Printf("total_lines_generated=%v\n", totalLineCount)
+	// Show log production stats if metrics endpoint is disabled
+	if !props.EnableMetrics {
+		log.Info(props.Tags+" total_lines_generated=", totalLineCount)
+		fmt.Printf("total_lines_generated=%v\n", totalLineCount)
+	}
 	props.Wg.Done()
 }
 
