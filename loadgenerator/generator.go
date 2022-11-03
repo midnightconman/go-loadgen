@@ -44,7 +44,6 @@ func wrapUpTask(props *LoadGenProperties, totalLineCount int64) {
 GenerateLoadFromInputFile replays an input sample file from the top of the head and adheres to the specified format, line rate and duration.
 */
 func GenerateLoadFromInputFile(promRegistry *prometheus.Registry, props *LoadGenProperties) {
-	fmt.Println("Generating logs by replaying input file...")
 	const MultiLineLimit = 1000
 
 	var log = logrus.New()
@@ -180,7 +179,6 @@ func GenerateLoadFromInputFile(promRegistry *prometheus.Registry, props *LoadGen
 GenerateAlphaNumeric generates random alphanumeric strings and writes it to a specified file at specified line rate(lps) and for specified duration.
 */
 func GenerateAlphaNumeric(promRegistry *prometheus.Registry, props *LoadGenProperties) {
-	fmt.Print("Generating random alphanumeric characters...")
 	var log = logrus.New()
 	var fileArray = make([]*os.File, props.FileCount, props.FileCount)
 	var logHandlers = make([]*logrus.Logger, props.FileCount, props.FileCount)
